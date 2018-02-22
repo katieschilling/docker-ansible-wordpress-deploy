@@ -2,6 +2,11 @@ provider "aws" {
   region = "${var.aws_region}"
 }
 
+resource "aws_key_pair" "auth" {
+  key_name   = "MyNVKeyPair"
+  public_key = "${file(var.public_key_path)}"
+}
+
 resource "aws_security_group" "default" {
   name        = "default_sg"
   description = "Default security group for ssh and http access"
@@ -84,10 +89,20 @@ resource "aws_instance" "web" {
   ami             = "${lookup(var.aws_amis, var.aws_region)}"
   security_groups = ["${aws_security_group.default.name}"]
   count           = "${var.number_servers}"
+  key_name = "MyNVKeyPair"
   tags {
     Name = "blog-terraform-elb-${count.index}"
   }
+  provisioner "remote-exec" {
+    #use local ssh agent
+    inline = ["echo Connection success!"]
+    connection {
+      user = "ubuntu"
+    }
+  }
+
 }
+
 
 output "ip" {
   value = "${aws_elb.web.dns_name}"

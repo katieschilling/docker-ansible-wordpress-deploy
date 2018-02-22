@@ -12,10 +12,19 @@ variable "aws_amis" {
   }
 }
 
+variable "public_key_path" {
+  default = "~/.ssh/id_rsa.pub"
+}
+
 # Arguments provided to the script
 variable "app" {
   description = "Name of the application to deploy"
   default     = "hello_world"
+}
+
+variable "private_ssh_key_path" {
+  description = "Path to private key .pem file"
+  default     = "/Users/katie/.aws/ssh/MyNVKeyPair.pem"
 }
 
 variable "env" {
